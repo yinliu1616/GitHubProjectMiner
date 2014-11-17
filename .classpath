@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="/Users/liuyin/Documents/eclipseworkspace/GitMiningProject/GitHubProjectMiner/lib/mysql-connector-java-5.1.32-bin.jar"/>
+	<classpathentry kind="lib" path="/opt/homebrew-cask/Caskroom/eclipse-ide/4.4.0/eclipse/plugins/org.eclipse.osgi_3.10.0.v20140606-1445.jar"/>
+	<classpathentry kind="lib" path="/opt/homebrew-cask/Caskroom/eclipse-ide/4.4.0/eclipse/plugins/org.eclipse.equinox.preferences_3.5.200.v20140224-1527.jar"/>
+	<classpathentry kind="lib" path="/opt/homebrew-cask/Caskroom/eclipse-ide/4.4.0/eclipse/plugins/org.eclipse.equinox.common_3.6.200.v20130402-1505.jar"/>
+	<classpathentry kind="lib" path="/opt/homebrew-cask/Caskroom/eclipse-ide/4.4.0/eclipse/plugins/org.eclipse.core.runtime_3.10.0.v20140318-2214.jar"/>
+	<classpathentry kind="lib" path="/opt/homebrew-cask/Caskroom/eclipse-ide/4.4.0/eclipse/plugins/org.eclipse.core.resources_3.9.0.v20140514-1307.jar"/>
+	<classpathentry kind="lib" path="/opt/homebrew-cask/Caskroom/eclipse-ide/4.4.0/eclipse/plugins/org.eclipse.core.jobs_3.6.0.v20140424-0053.jar"/>
+	<classpathentry kind="lib" path="/opt/homebrew-cask/Caskroom/eclipse-ide/4.4.0/eclipse/plugins/org.eclipse.core.contenttype_3.4.200.v20140207-1251.jar"/>
+	<classpathentry kind="lib" path="/opt/homebrew-cask/Caskroom/eclipse-ide/4.4.0/eclipse/plugins/org.eclipse.jdt.core_3.10.0.v20140902-0626.jar"/>
+	<classpathentry kind="lib" path="/Users/liuyin/Documents/eclipseworkspace/GitMiningProject/GitHubProjectMiner/lib/org.eclipse.jgit-3.5.1.201410131835-r.jar"/>
+	<classpathentry kind="lib" path="/Users/liuyin/Documents/eclipseworkspace/GitMiningProject/GitHubProjectMiner/lib/org.eclipse.jgit-3.5.1.201410131835-r-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/liuyin/Documents/eclipseworkspace/GitMiningProject/GitHubProjectMiner/lib/com.jcraft.jsch-0.1.51.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
