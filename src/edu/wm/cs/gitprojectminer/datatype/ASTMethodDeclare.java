@@ -11,12 +11,13 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import edu.wm.cs.gitprojectminer.codefeatures.ASTModifierHelper;
+import edu.wm.cs.gitprojectminer.config.ConfigString;
 import edu.wm.cs.gitprojectminer.sql.MySQLConnection;
 
 public class ASTMethodDeclare {
 
 
-	private static final String ASTMETHODDECLARE_TABLE = "astmethoddeclare";	
+	//private static final String ASTMETHODDECLARE_TABLE = "astmethoddeclare";	
 
 	private ASTTypeDeclare astTypeDeclare;
 	private List<String> modifiers=new ArrayList<>();
@@ -40,7 +41,7 @@ public class ASTMethodDeclare {
 	public void persistASTMethodDeclare(MySQLConnection db) {
 		PreparedStatement preparedStatement;
 		try {
-			preparedStatement = db.getConn().prepareStatement("insert into "+ ASTMETHODDECLARE_TABLE +"(localfile_path,project_url,commit_sha1,isConstructor,return_type,name,parameters,modifiers) values ( ?, ?, ?, ?, ?, ?, ?, ?);");
+			preparedStatement = db.getConn().prepareStatement("insert into "+ ConfigString.ASTMETHODDECLARE_TABLE +"(localfile_path,project_url,commit_sha1,isConstructor,return_type,name,parameters,modifiers) values ( ?, ?, ?, ?, ?, ?, ?, ?);");
 		    preparedStatement.setString(1, astTypeDeclare.getAstRoot().getLocalfile_path());
 		    preparedStatement.setString(2, astTypeDeclare.getAstRoot().getProject_url());			
 		    preparedStatement.setString(3, astTypeDeclare.getAstRoot().getCommit_sha1());

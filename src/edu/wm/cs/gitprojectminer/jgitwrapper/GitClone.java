@@ -8,14 +8,16 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 
+import edu.wm.cs.gitprojectminer.config.ConfigString;
+
 
 public class GitClone {
 
-	 private static final String LOCAL_REPO_DIR = "./localrepo/";
+	 //private static final String LOCAL_REPO_DIR = "./localrepo/";
 	 
 	 public static void Clone(String url,String path) throws IOException, InvalidRemoteException, TransportException, GitAPIException{
 	        // prepare a new folder for the cloned repository
-	    	File localDir = new File(LOCAL_REPO_DIR+path);
+	    	File localDir = new File(ConfigString.LOCAL_REPO_DIR+"/"+path);
 	    	localDir.mkdir();
 	  
 

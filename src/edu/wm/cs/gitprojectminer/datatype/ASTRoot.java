@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wm.cs.gitprojectminer.config.ConfigString;
 import edu.wm.cs.gitprojectminer.sql.MySQLConnection;
 
 /**
@@ -12,8 +13,8 @@ import edu.wm.cs.gitprojectminer.sql.MySQLConnection;
  * Container class that holds a file's parsed AST
  */
 public class ASTRoot {
-	private static final String ASTROOT_TABLE = "astroot";
-	private static final String IMPORT_TABLE = "astroot_import";
+	//private static final String ASTROOT_TABLE = "astroot";
+	//private static final String IMPORT_TABLE = "astroot_import";
 	private String localfile_path;
 	private String project_url;
 	private String commit_sha1;
@@ -28,7 +29,7 @@ public class ASTRoot {
 	public void persistASTRoot(MySQLConnection db){
 		PreparedStatement preparedStatement;
 		try {
-			preparedStatement = db.getConn().prepareStatement("insert into "+ ASTROOT_TABLE +"(localfile_path,project_url,commit_sha1,license,packageDeclare,TypeDeclare_name) values ( ?, ?, ?, ?, ?, ?);");
+			preparedStatement = db.getConn().prepareStatement("insert into "+ ConfigString.ASTROOT_TABLE +"(localfile_path,project_url,commit_sha1,license,packageDeclare,TypeDeclare_name) values ( ?, ?, ?, ?, ?, ?);");
 		    preparedStatement.setString(1, localfile_path);
 		    preparedStatement.setString(2, project_url);			
 		    preparedStatement.setString(3, commit_sha1);
@@ -45,7 +46,7 @@ public class ASTRoot {
 		for (String importdeclare:imports){
 			PreparedStatement prepStmt;
 			try {
-				prepStmt = db.getConn().prepareStatement("insert into "+ IMPORT_TABLE +"(localfile_path,project_url,commit_sha1,importdeclare) values ( ?, ?, ?, ?);");
+				prepStmt = db.getConn().prepareStatement("insert into "+ ConfigString.IMPORT_TABLE +"(localfile_path,project_url,commit_sha1,importdeclare) values ( ?, ?, ?, ?);");
 				prepStmt.setString(1, localfile_path);
 				prepStmt.setString(2, project_url);			
 				prepStmt.setString(3, commit_sha1);

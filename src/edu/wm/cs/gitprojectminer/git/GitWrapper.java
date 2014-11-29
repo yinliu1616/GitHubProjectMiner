@@ -138,7 +138,7 @@ public class GitWrapper {
 		return count;
 	} 
 	
-	protected String getURL(String path){
+	public String getURL(String path){
 		String result="";
 		try{
 			File dir = new File(path);
@@ -181,6 +181,55 @@ public class GitWrapper {
 				e.printStackTrace();
 			}
 
+	}
+	
+	public String backOneRevisionCLI(String path){
+		String result="";
+		File dir = new File(path);
+		Runtime shell = Runtime.getRuntime();		
+		try {
+			Process proc = shell.exec(gitPath + " reset --hard HEAD^ ",null,dir);
+			BufferedReader stdIn = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			result = stdIn.readLine();
+			try {
+				proc.waitFor();
+			} catch (InterruptedException e) {
+				System.err.println("Failed to finish reset head");
+				e.printStackTrace();
+			}
+		} catch (IOException e) {
+			System.err.println("Failed to call git reset --hard HEAD^");
+			e.printStackTrace();
+		}
+		System.out.println("set revision to previous one");
+		return result;	
+		
+	}
+	public String setRevisionCLI(String path,String commit_id){
+		String result="";
+		File dir = new File(path);
+		Runtime shell = Runtime.getRuntime();		
+		try {
+			Process proc = shell.exec(gitPath + " reset --hard "+commit_id,null,dir);
+			BufferedReader stdIn = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			result = stdIn.readLine();
+			try {
+				proc.waitFor();
+			} catch (InterruptedException e) {
+				System.err.println("Failed to finish reset head");
+				e.printStackTrace();
+			}
+		} catch (IOException e) {
+			System.err.println("Failed to call git reset --hard HEAD^");
+			e.printStackTrace();
+		}
+		System.out.println("set revision to commit_id="+commit_id);		
+		return result;	
+		
+		
+		
+		
+		
 	}
 	
 }

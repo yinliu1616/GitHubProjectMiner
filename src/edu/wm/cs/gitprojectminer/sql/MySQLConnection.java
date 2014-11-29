@@ -7,13 +7,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import edu.wm.cs.gitprojectminer.config.ConfigString;
+
 public class MySQLConnection {
 	// JDBC driver name and database URL
-	   static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-	   static final String DB_URL = "jdbc:mysql://localhost/test";
+	//   static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+	//   static final String DB_URL = "jdbc:mysql://localhost/test";
 	//  Database credentials
-	   static final String USER = "root";
-	   static final String PASS = "521616";
+	 //  static final String USER = "root";
+	 //  static final String PASS = "521616";
 	   
 	   
 	   private Connection conn = null;
@@ -70,7 +72,7 @@ public class MySQLConnection {
 		//STEP 3: Open a connection
 		System.out.println("Connecting to database...");
 		try {
-			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			conn = DriverManager.getConnection(ConfigString.DB_URL,ConfigString.USER,ConfigString.PASS);
 		} catch (SQLException e) {
 			System.out.println("Failed to open a connection");
 			e.printStackTrace();

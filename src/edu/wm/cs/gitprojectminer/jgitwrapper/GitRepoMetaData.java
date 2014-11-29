@@ -13,10 +13,11 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
+import edu.wm.cs.gitprojectminer.config.ConfigString;
 import edu.wm.cs.gitprojectminer.datatype.CommitType;
 
 public class GitRepoMetaData {
-	private static final int MAX_COMMITMSG=255;
+	//private static final int MAX_COMMITMSG=255;
 	private String localPath;
 	private Repository repo;
 	private String url;
@@ -94,15 +95,27 @@ public class GitRepoMetaData {
         	newCommit.setSha1(rev.getName());
         	newCommit.setDeveloper_email(rev.getCommitterIdent().getEmailAddress());
         	newCommit.setProject_url(url);
-        	if (rev.getFullMessage().length()>MAX_COMMITMSG){
-        		if (rev.getShortMessage().length()>MAX_COMMITMSG){
-        			newCommit.setCommit_msg(rev.getShortMessage().substring(0, MAX_COMMITMSG));
+        	String fullMsg=rev.getFullMessage();
+        	String shortMsg=rev.getShortMessage();
+        	int fullMsgLen=rev.getFullMessage().length();
+        	if (fullMsgLen>ConfigString.MAX_COMMITMSG){
+        		if (shortMsg.length()>ConfigString.MAX_COMMITMSG){
+        			newCommit.setCommit_msg(shortMsg.substring(0, ConfigString.MAX_COMMITMSG));
         		}else
-        			newCommit.setCommit_msg(rev.getShortMessage());
+        			newCommit.setCommit_msg(shortMsg);
         	}else{
-        		newCommit.setCommit_msg(rev.getFullMessage());
+        		newCommit.setCommit_msg(fullMsg);
         	}
         	newCommit.setTime(rev.getCommitTime());
+        	newCommit.setCommit_msglen(rev.getFullMessage().length());
+        	String fix=" fix ";
+        	String fixed=" fixed ";
+        	if (fullMsg.toLowerCase().contains(fix.toLowerCase())||fullMsg.toLowerCase().contains(fixed.toLowerCase())){
+        		newCommit.setBugFix(true);
+        	}else newCommit.setBugFix(false);
+        	
+        	
+        	
         	commits.add(newCommit);
             count++;
         }

@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class SrcFileLicenseExtractor {
-	
-	private static String ninka="./ninka/ninka.pl";
+public class SeperateLicenseFileExtractor {
+
+	private static String ninka="./ninka/ninkaLICENSE.pl";
 	private static File dir = new File(".");
 	
 	public static String LicenseExtractor(String file) {
@@ -15,8 +15,15 @@ public class SrcFileLicenseExtractor {
 		try{
 			
 			Runtime shell = Runtime.getRuntime();
-			Process proc = shell.exec(ninka + " -d "+file,null,dir);
-			BufferedReader stdIn = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			Process proc1 = shell.exec("cp "+file+" "+file+".comments",null,dir);
+			try {
+				proc1.waitFor();
+			} catch (InterruptedException e) {
+				System.out.println("Failed to copy LICENSE file "+file);
+				e.printStackTrace();
+			}
+			Process proc2 = shell.exec(ninka + " -d "+file,null,dir);
+			BufferedReader stdIn = new BufferedReader(new InputStreamReader(proc2.getInputStream()));
 			licenseRes = stdIn.readLine();
 			
 			

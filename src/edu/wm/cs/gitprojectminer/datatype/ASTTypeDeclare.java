@@ -12,12 +12,13 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import edu.wm.cs.gitprojectminer.codefeatures.ASTModifierHelper;
+import edu.wm.cs.gitprojectminer.config.ConfigString;
 import edu.wm.cs.gitprojectminer.sql.MySQLConnection;
 
 public class ASTTypeDeclare {
 	
-	private static final String ASTTYPEDECLARE_TABLE = "asttypedeclare";	
-	private static final String NESTTYPE_TABLE = "asttypedeclare_nestedtype";	
+	//private static final String ASTTYPEDECLARE_TABLE = "asttypedeclare";	
+	//private static final String NESTTYPE_TABLE = "asttypedeclare_nestedtype";	
 
 
 	//private String project_url;
@@ -65,7 +66,7 @@ public class ASTTypeDeclare {
 		
 		PreparedStatement preparedStatement;
 		try {
-			preparedStatement = db.getConn().prepareStatement("insert into "+ ASTTYPEDECLARE_TABLE +"(localfile_path,project_url,commit_sha1,typedeclare_name,modifiers,superclass) values ( ?, ?, ?, ?, ?, ?);");
+			preparedStatement = db.getConn().prepareStatement("insert into "+ ConfigString.ASTTYPEDECLARE_TABLE +"(localfile_path,project_url,commit_sha1,typedeclare_name,modifiers,superclass) values ( ?, ?, ?, ?, ?, ?);");
 		    preparedStatement.setString(1, astRoot.getLocalfile_path());
 		    preparedStatement.setString(2, astRoot.getProject_url());			
 		    preparedStatement.setString(3, astRoot.getCommit_sha1());
@@ -83,7 +84,7 @@ public class ASTTypeDeclare {
 		for (ASTTypeDeclare innerType:nestedTypeDeclares){
 			PreparedStatement nestTypeStmt;
 			try {
-				nestTypeStmt = db.getConn().prepareStatement("insert into "+  NESTTYPE_TABLE +"(localfile_path,project_url,commit_sha1,outertype_name,innertype_name) values ( ?, ?, ?, ?, ?);");
+				nestTypeStmt = db.getConn().prepareStatement("insert into "+  ConfigString.NESTTYPE_TABLE +"(localfile_path,project_url,commit_sha1,outertype_name,innertype_name) values ( ?, ?, ?, ?, ?);");
 				nestTypeStmt.setString(1, astRoot.getLocalfile_path());
 				nestTypeStmt.setString(2, astRoot.getProject_url());			
 				nestTypeStmt.setString(3, astRoot.getCommit_sha1());

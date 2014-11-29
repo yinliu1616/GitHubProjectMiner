@@ -4,27 +4,32 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
 
+import edu.wm.cs.gitprojectminer.config.ConfigString;
 import edu.wm.cs.gitprojectminer.sql.MySQLConnection;
 
 public class CommitType implements Comparable<CommitType>{
 	
-	private static final String COMMIT_TABLE = "commit";
+	//private static final String COMMIT_TABLE = "commit";
 	private String sha1;
 	private String project_url;
 	private String developer_email;
 	private int time;
 	private String commit_msg;
+	private int commit_msglen;
+	private boolean isBugFix;
 	
 	
 	public void persistCommit(MySQLConnection db){
 		PreparedStatement preparedStatement;
 		try {
-			preparedStatement = db.getConn().prepareStatement("insert into "+ COMMIT_TABLE +"(sha1,project_url,developer_email,time,commit_msg) values ( ?, ?, ?, ?, ?);");
+			preparedStatement = db.getConn().prepareStatement("insert into "+ ConfigString.COMMIT_TABLE +"(sha1,project_url,developer_email,time,commit_msg,commit_msglen,isBugFix) values ( ?, ?, ?, ?, ?, ?, ?);");
 		    preparedStatement.setString(1, sha1);
 		    preparedStatement.setString(2, project_url);			
 		    preparedStatement.setString(3, developer_email);
 		    preparedStatement.setInt(4, time);
 		    preparedStatement.setString(5, commit_msg);
+		    preparedStatement.setInt(6, commit_msglen);
+		    preparedStatement.setBoolean(7, isBugFix);
 		   // System.out.println(preparedStatement.toString());
 		    preparedStatement.executeUpdate();
 		} catch (SQLException e1) {
@@ -95,6 +100,30 @@ public class CommitType implements Comparable<CommitType>{
 	 */
 	public void setCommit_msg(String commit_msg) {
 		this.commit_msg = commit_msg;
+	}
+	/**
+	 * @return the commit_msglen
+	 */
+	public int getCommit_msglen() {
+		return commit_msglen;
+	}
+	/**
+	 * @param commit_msglen the commit_msglen to set
+	 */
+	public void setCommit_msglen(int commit_msglen) {
+		this.commit_msglen = commit_msglen;
+	}
+	/**
+	 * @return the isBugFix
+	 */
+	public boolean isBugFix() {
+		return isBugFix;
+	}
+	/**
+	 * @param isBugFix the isBugFix to set
+	 */
+	public void setBugFix(boolean isBugFix) {
+		this.isBugFix = isBugFix;
 	}
 	
 

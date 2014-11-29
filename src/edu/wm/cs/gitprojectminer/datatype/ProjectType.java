@@ -4,19 +4,22 @@ package edu.wm.cs.gitprojectminer.datatype;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import edu.wm.cs.gitprojectminer.codefeatures.CodeFeatureExtractor;
 import edu.wm.cs.gitprojectminer.codefeatures.FindInputFiles;
+import edu.wm.cs.gitprojectminer.codefeatures.SeperateLicenseFileExtractor;
+import edu.wm.cs.gitprojectminer.config.ConfigString;
 import edu.wm.cs.gitprojectminer.git.GitWrapper;
 import edu.wm.cs.gitprojectminer.jgitwrapper.GitRepoMetaData;
 import edu.wm.cs.gitprojectminer.sql.MySQLConnection;
 
 public class ProjectType {
-	private static final String LOCAL_REPO_DIR = "./localrepo";
-	private static final String PROJECT_TABLE = "project";
+	//private static final String LOCAL_REPO_DIR = "./localrepo";
+	//private static final String PROJECT_TABLE = "project";
 	//private String id;
 	private String name;
 	private String url;
@@ -28,25 +31,40 @@ public class ProjectType {
 	//private int num_developers;
 	private List<CommitType> commits;
 	private int num_commits=0;
-	//private List<String> licenses;
+	private List<String> licenses=new ArrayList<String>();
 	
 	//private List<String> languages;
-	private List<ASTRoot> astRoots;
+	//private Map<String,List<ASTRoot>> astRootMap=new HashMap<>();
 	
 	
-	public ProjectType(String url){
-		setUrl(url);
-		parseNameFromUrl(url);
-		//TODO: Check if Project locally exists, 
+	public ProjectType(String url, String localname){
+		if (url!=null){
+			setUrl(url);
+			parseNameFromUrl(url);	
+			//TODO: Check if Project locally exists, 
 		
-		//if not, git clone it from GitHub, extract meta data and code features store them into database
-		GitWrapper gw = new GitWrapper();
-		gw.cloneCLI(url,LOCAL_REPO_DIR);
-		setLocalPath(LOCAL_REPO_DIR+"/"+this.name);
+			//if not, git clone it from GitHub, extract meta data and code features store them into database
+			GitWrapper gw = new GitWrapper();
+			gw.cloneCLI(url,ConfigString.LOCAL_REPO_DIR);			
+			
+			
+			
+		}else{
+			setName(localname);
+			GitWrapper gw = new GitWrapper();
+			setUrl(gw.getURL(ConfigString.LOCAL_REPO_DIR+"/"+localname));
+		}
+		
+		setLocalPath(ConfigString.LOCAL_REPO_DIR+"/"+this.name);
+		extractProjectLicense();
 		extractCommits();
 		num_commits=commits.size();
 		//if exist, query directly from database.
-		extractASTFeatures();
+		
+		
+		
+		//extractASTFeatures();
+	
 	}
 	
 
@@ -68,12 +86,57 @@ public class ProjectType {
 		String projectName=tokens[tokens.length-1];
 		this.name = projectName.substring(0, projectName.length()-4);
 	}	
+	
+	
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+
 	/**
 	 * @param localPath the localPath to set
 	 */
 	private void setLocalPath(String localPath) {
 		this.localPath = localPath;
 	}	
+	
+	
+	private void extractProjectLicense(){
+		String pattern = "LICENSE";
+        String[] findCmd=new String[3];
+        findCmd[0]=localPath;
+        findCmd[1]="-name";
+        findCmd[2]=pattern;
+        List<String> resultMatches;
+		try {
+			resultMatches = FindInputFiles.find(findCmd);
+			if (resultMatches.size()==0) System.out.println("empty results match LICENSE file!");
+			else {
+				System.out.println("found "+ resultMatches.size()+ " LICENSE file!");
+				for (String file:resultMatches){
+					licenses.add(SeperateLicenseFileExtractor.LicenseExtractor(file));
+				}
+
+
+			}			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		
+		
+		
+	}
+	
+	
+	
+	
 	private void extractCommits(){
 		GitRepoMetaData metaParser=new GitRepoMetaData(localPath);
 		try {
@@ -96,7 +159,8 @@ public class ProjectType {
 	//Extract ast code features
 	//First find all *.java in project local path
 	//For each java source file, parse it to AstRoot instance
-	private void extractASTFeatures(){
+	private List<ASTRoot> extractASTFeatures(){
+		List<ASTRoot> astRoots=null;
         String pattern = "*.java";
         String[] findCmd=new String[3];
         findCmd[0]=localPath;
@@ -120,11 +184,25 @@ public class ProjectType {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
+		return astRoots;
 		
 	}
+		//Extract ast code features for commit sha1
+		//For each java source file, parse it to AstRoot instance
+		private List<ASTRoot> extractASTFeaturesForCommit(String sha1){
+			
+			GitWrapper gw = new GitWrapper();
+			gw.setRevisionCLI(localPath, sha1);
+			List<ASTRoot> astRoots=extractASTFeatures();
+			for (ASTRoot astroot:astRoots){
+				astroot.setCommit_sha1(sha1);
+			}
+			return astRoots;
+			
+		}
+	
+	
+	
 	
 	public void persistProject() {
 		MySQLConnection db=new MySQLConnection();
@@ -134,12 +212,13 @@ public class ProjectType {
 	    // preparedStatements can use variables and are more efficient
 		PreparedStatement preparedStatement;
 		try {
-			preparedStatement = db.getConn().prepareStatement("insert into "+ PROJECT_TABLE +"(name,url,localpath,create_time,num_commits) values ( ?, ?, ?, ?, ?);");
+			preparedStatement = db.getConn().prepareStatement("insert into "+ ConfigString.PROJECT_TABLE +"(name,url,localpath,create_time,num_commits,licenses) values ( ?, ?, ?, ?, ?, ?);");
 		    preparedStatement.setString(1, name);
 		    preparedStatement.setString(2, url);			
 		    preparedStatement.setString(3, localPath);
 		    preparedStatement.setInt(4, create_time);
 		    preparedStatement.setInt(5, num_commits);
+		    preparedStatement.setString(6, licenses.toString());
 		    //System.out.println(preparedStatement.toString());
 		    preparedStatement.executeUpdate();
 		} catch (SQLException e1) {
@@ -148,29 +227,24 @@ public class ProjectType {
 		}
 		for (CommitType commit:commits){
 			commit.persistCommit(db);
-
-		}		
+			
+			/*
+			List<ASTRoot> astRoots=extractASTFeaturesForCommit(commit.getSha1());
+			for (ASTRoot astRoot : astRoots){					
+				astRoot.setProject_url(url);
+				astRoot.setCommit_sha1(commit.getSha1());
+				astRoot.persistASTRoot(db);		
+			}
+			*/
+		}
+		List<ASTRoot> astRoots=extractASTFeatures();
 		for (ASTRoot astRoot : astRoots){					
 			astRoot.setProject_url(url);
 			astRoot.setCommit_sha1(commits.get(commits.size()-1).getSha1());
 			astRoot.persistASTRoot(db);		
-		}		
-		
-		
-		
-	      // "myuser, webpage, datum, summary, COMMENTS from FEEDBACK.COMMENTS");
-	      // parameters start with 1
-		/*
-		
-		String sql = "INSERT INTO"+ PROJECT_TABLE  + "VALUES (\""+  url + "\")";
-		try {
-			db.getStmt().executeUpdate(sql);
-			System.out.println("Insert project meta data successfully");
-		} catch (SQLException e) {
-			System.out.println("Failed to insert project meta data");
-			e.printStackTrace();
 		}
-		*/
+		
+		
 		db.closeConnection();
 		
 	}
