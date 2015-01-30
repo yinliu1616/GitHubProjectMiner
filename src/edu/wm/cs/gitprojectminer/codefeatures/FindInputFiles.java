@@ -101,9 +101,10 @@ public class FindInputFiles {
         // Prints the total number of
         // matches to standard out.
         void done() {
-            System.out.println("Matched: "
+  /*         System.out.println("Matched: "
                 + numMatches);
-        }
+  */
+       }
 
         // Invoke the pattern matching
         // method on each file.

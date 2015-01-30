@@ -108,8 +108,8 @@ public class GitRepoMetaData {
         	}
         	newCommit.setTime(rev.getCommitTime());
         	newCommit.setCommit_msglen(rev.getFullMessage().length());
-        	String fix=" fix ";
-        	String fixed=" fixed ";
+        	String fix="fix ";
+        	String fixed="fixed ";
         	if (fullMsg.toLowerCase().contains(fix.toLowerCase())||fullMsg.toLowerCase().contains(fixed.toLowerCase())){
         		newCommit.setBugFix(true);
         	}else newCommit.setBugFix(false);

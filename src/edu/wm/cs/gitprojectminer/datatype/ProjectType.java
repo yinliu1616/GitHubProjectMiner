@@ -116,7 +116,7 @@ public class ProjectType {
 			resultMatches = FindInputFiles.find(findCmd);
 			if (resultMatches.size()==0) System.out.println("empty results match LICENSE file!");
 			else {
-				System.out.println("found "+ resultMatches.size()+ " LICENSE file!");
+				//System.out.println("found "+ resultMatches.size()+ " LICENSE file!");
 				for (String file:resultMatches){
 					licenses.add(SeperateLicenseFileExtractor.LicenseExtractor(file));
 				}
@@ -159,8 +159,8 @@ public class ProjectType {
 	//Extract ast code features
 	//First find all *.java in project local path
 	//For each java source file, parse it to AstRoot instance
-	private List<ASTRoot> extractASTFeatures(){
-		List<ASTRoot> astRoots=null;
+	//if get all the astroots, GC overhead limit exceeded, heap overflow!!! need to create one and persist one!!!
+	private void extractASTFeaturesNPersist(String sha1,MySQLConnection db){
         String pattern = "*.java";
         String[] findCmd=new String[3];
         findCmd[0]=localPath;
@@ -171,33 +171,23 @@ public class ProjectType {
 			resultMatches = FindInputFiles.find(findCmd);
 			if (resultMatches.size()==0) System.out.println("empty results match *.java file!");
 			else {
-				System.out.println("found "+ resultMatches.size()+ " *.java file!");
-				astRoots=CodeFeatureExtractor.ParseFiles(resultMatches);
-				/*
-				for (ASTRoot astRoot : astRoots){					
-					System.out.println(astRoot.toString());				
-				}
-				*/
+				//System.out.println("found "+ resultMatches.size()+ " *.java file!");
+				CodeFeatureExtractor.ParseFilesNPersist(resultMatches, sha1, url, db);
 
 			}			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return astRoots;
 		
 	}
 		//Extract ast code features for commit sha1
 		//For each java source file, parse it to AstRoot instance
-		private List<ASTRoot> extractASTFeaturesForCommit(String sha1){
+		private void extractASTFeaturesForCommit(String sha1,MySQLConnection db){
 			
 			GitWrapper gw = new GitWrapper();
 			gw.setRevisionCLI(localPath, sha1);
-			List<ASTRoot> astRoots=extractASTFeatures();
-			for (ASTRoot astroot:astRoots){
-				astroot.setCommit_sha1(sha1);
-			}
-			return astRoots;
+			extractASTFeaturesNPersist(sha1,db);
 			
 		}
 	
@@ -228,6 +218,8 @@ public class ProjectType {
 		for (CommitType commit:commits){
 			commit.persistCommit(db);
 			
+			extractASTFeaturesForCommit(commit.getSha1(), db);
+			
 			/*
 			List<ASTRoot> astRoots=extractASTFeaturesForCommit(commit.getSha1());
 			for (ASTRoot astRoot : astRoots){					
@@ -237,13 +229,22 @@ public class ProjectType {
 			}
 			*/
 		}
-		List<ASTRoot> astRoots=extractASTFeatures();
+		GitWrapper gw = new GitWrapper();
+		gw.setRevisionCLI(localPath, commits.get(commits.size()-1).getSha1());
+		//only extract the most updated revision
+		//extractASTFeaturesNPersist(commits.get(commits.size()-1).getSha1(), db);
+		
+		
+		
+		
+		//if get all the astroots, GC overhead limit exceeded, heap overflow!!! need to create one and persist one!!!
+		/*
 		for (ASTRoot astRoot : astRoots){					
 			astRoot.setProject_url(url);
 			astRoot.setCommit_sha1(commits.get(commits.size()-1).getSha1());
 			astRoot.persistASTRoot(db);		
 		}
-		
+		*/
 		
 		db.closeConnection();
 		

@@ -35,7 +35,15 @@ public class ASTRoot {
 		    preparedStatement.setString(3, commit_sha1);
 		    preparedStatement.setString(4, license);
 		    preparedStatement.setString(5, packageDeclare);
-		    preparedStatement.setString(6, astTypeDeclare==null?null:astTypeDeclare.getIdentifier());
+		    
+		    if (astTypeDeclare==null){
+		    	preparedStatement.setString(6, null);
+		    }else {
+		    	String astTypeDeclare_name=astTypeDeclare.getIdentifier();
+		    	if (astTypeDeclare_name.length()>ConfigString.MAX_TYPEDECLARENAMELEN)
+		    		astTypeDeclare_name=astTypeDeclare_name.substring(0, ConfigString.MAX_TYPEDECLARENAMELEN)+"...";
+		    	preparedStatement.setString(6, astTypeDeclare_name);	
+		    }
 		    //System.out.println(preparedStatement.toString());
 		    preparedStatement.executeUpdate();
 		} catch (SQLException e1) {

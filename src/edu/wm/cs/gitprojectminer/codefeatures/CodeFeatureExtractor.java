@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.wm.cs.gitprojectminer.datatype.ASTRoot;
+import edu.wm.cs.gitprojectminer.sql.MySQLConnection;
 
 public class CodeFeatureExtractor {
 	/**parse a single java source file
@@ -31,6 +32,9 @@ public class CodeFeatureExtractor {
 	}
 	
 	//parse a list of java source file
+	//when there are a large number of 
+	//if get all the astroots, GC overhead limit exceeded, heap overflow!!! need to create one and persist one!!!
+	/*
 	public static List<ASTRoot> ParseFiles(List<String> filePaths){
 		List<ASTRoot> astRoots=new ArrayList<ASTRoot>();
 		for (String filePath : filePaths){
@@ -50,6 +54,29 @@ public class CodeFeatureExtractor {
 		
 		return astRoots;
 		
+		
+	}
+	*/
+	
+	
+	//parse a list of java source file
+	public static void ParseFilesNPersist(List<String> filePaths,String sha1,String url,MySQLConnection db){
+		for (String filePath : filePaths){
+			//System.out.println(filePath);
+			try {
+
+				ASTRoot astRoot=ASTFeatureParser.parse(readFileToString(filePath));
+				astRoot.setLocalfile_path(filePath);
+				astRoot.setProject_url(url);
+				astRoot.setCommit_sha1(sha1);
+				
+				astRoot.setLicense(SrcFileLicenseExtractor.LicenseExtractor(filePath));
+				astRoot.persistASTRoot(db);	
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}	
 		
 	}
 

@@ -7,12 +7,11 @@ import java.io.InputStreamReader;
 
 import edu.wm.cs.gitprojectminer.config.ConfigString;
 
-public class SeperateLicenseFileExtractor {
-
-	//private static String ninka="./ninka/ninkaLICENSE.pl";
+public class SeperateLicenseFileExtratorTest {
 	private static File dir = new File(".");
-	
-	public static String LicenseExtractor(String file) {
+	public static void main(String argv[]){
+		
+		String file="LICENSE_hive";
 		String licenseRes="";
 		try{
 			
@@ -27,6 +26,7 @@ public class SeperateLicenseFileExtractor {
 			Process proc2 = shell.exec(ConfigString.ninkalicense + " -d "+file,null,dir);
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(proc2.getInputStream()));
 			licenseRes = stdIn.readLine();
+			System.out.println(licenseRes);
 			
 			
 			
@@ -35,13 +35,6 @@ public class SeperateLicenseFileExtractor {
 			System.out.println("Failed Running ninka to get licence Results for file:"+"file"+"\n");
 			e.printStackTrace();
 		}
-		String delims = ";";
-		String[] tokens = licenseRes.split(delims);
-		
-		if (tokens!=null&&tokens.length>1)
-			return tokens[1];
-		else return null;
-		// TODO Auto-generated constructor stub
 	}
 
 }

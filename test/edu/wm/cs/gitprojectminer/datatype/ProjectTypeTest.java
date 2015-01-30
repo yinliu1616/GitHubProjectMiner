@@ -11,7 +11,7 @@ public class ProjectTypeTest {
 		//String url="https://github.com/apache/commons-lang.git";
 		//String url="https://github.com/centic9/jgit-cookbook.git";
 		List<String> urlArray=new ArrayList<>();
-		//urlArray.add("https://github.com/apache/camel.git");
+		urlArray.add("https://github.com/apache/camel.git");
 		urlArray.add("https://github.com/apache/cxf.git");
 		urlArray.add("https://github.com/apache/derby.git");
 		urlArray.add("https://github.com/apache/felix.git");

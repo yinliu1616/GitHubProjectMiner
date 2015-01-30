@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import edu.wm.cs.gitprojectminer.config.ConfigString;
+
 public class SrcFileLicenseExtractor {
 	
-	private static String ninka="./ninka/ninka.pl";
+	//private static String ninka="./ninka/ninka.pl";
 	private static File dir = new File(".");
 	
 	public static String LicenseExtractor(String file) {
@@ -15,7 +17,7 @@ public class SrcFileLicenseExtractor {
 		try{
 			
 			Runtime shell = Runtime.getRuntime();
-			Process proc = shell.exec(ninka + " -d "+file,null,dir);
+			Process proc = shell.exec(ConfigString.ninka + " -d "+file,null,dir);
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 			licenseRes = stdIn.readLine();
 			
@@ -28,8 +30,9 @@ public class SrcFileLicenseExtractor {
 		}
 		String delims = ";";
 		String[] tokens = licenseRes.split(delims);
-		
-		return tokens[1];
+		if (tokens!=null&&tokens.length>1)
+			return tokens[1];
+		else return null;
 		// TODO Auto-generated constructor stub
 	}
 

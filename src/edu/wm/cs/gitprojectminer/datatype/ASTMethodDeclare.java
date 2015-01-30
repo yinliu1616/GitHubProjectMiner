@@ -50,7 +50,13 @@ public class ASTMethodDeclare {
 		    preparedStatement.setBoolean(4, isConstructor);
 		    preparedStatement.setString(5, return_type==null?null:return_type.toString());
 		    preparedStatement.setString(6, identifier);
-		    preparedStatement.setString(7, parameters.toString());
+		    String params=parameters.toString();
+		    if (params.length()>ConfigString.MAX_PARAMSLEN){
+		    	params=params.substring(0, ConfigString.MAX_PARAMSLEN);
+		    	params=params+"...";
+		    }
+		    
+		    preparedStatement.setString(7, params);
 		    preparedStatement.setString(8, modifiers.toString());
 		    
 		    
@@ -58,6 +64,7 @@ public class ASTMethodDeclare {
 		    preparedStatement.executeUpdate();
 		} catch (SQLException e1) {
 			System.out.println("failed to insert ASTMethodDeclare "+identifier+ " into identifier table");
+			System.out.println("parameters: "+parameters.toString());
 			e1.printStackTrace();
 		}
 			
